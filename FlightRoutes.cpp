@@ -6,7 +6,6 @@
 #include <algorithm>
 #include <cmath>
 #include <cstring>
-#include <bits/stdc++.h>
 using namespace std;
 
 class Flight_M
@@ -279,60 +278,63 @@ public:
     }
 
     string Get_Minimum_Time(string src, string dst)
+{
+    int min = INT_MAX;
+    string ans = "";
+    unordered_map<string, bool> processed;
+    deque<Pair> stack;
+
+    Pair sp;
+    sp.aname = src;
+    sp.psf = src + "  ";
+    sp.min_dis = 0;
+    sp.min_time = 0;
+
+    stack.push_front(sp);
+
+    while (!stack.empty())
     {
-        int min = INT_MAX;
-        string ans = "";
-        unordered_map<string, bool> processed;
-        deque<Pair> stack;
-
-        Pair sp;
-        sp.aname = src;
-        sp.psf = src + "  ";
-        sp.min_dis = 0;
-        sp.min_time = 0;
-
-        stack.push_front(sp);
-
-        while (!stack.empty())
+        Pair rp = stack.front();
+        stack.pop_front();
+        if (processed.count(rp.aname))
         {
-            Pair rp = stack.front();
-            stack.pop_front();
-            if (processed.count(rp.aname))
-            {
-                continue;
-            }
+            continue;
+        }
 
-            processed[rp.aname] = true;
+        processed[rp.aname] = true;
 
-            if (rp.aname == dst)
+        if (rp.aname == dst)
+        {
+            int temp = rp.min_time;
+            if (temp < min)
             {
-                int temp = rp.min_time;
-                if (temp < min)
-                {
-                    ans = rp.psf;
-                    min = temp;
- }
-                continue;
+                ans = rp.psf;
+                min = temp;
             }
-            Airport rpvtx = airports[rp.aname];
-            for (auto it = rpvtx.nbrs.begin(); it != rpvtx.nbrs.end(); it++)
+            continue;
+        }
+        Airport rpvtx = airports[rp.aname];
+        for (auto it = rpvtx.nbrs.begin(); it != rpvtx.nbrs.end(); it++)
+        {
+            string nbr = it->first;
+            if (!processed.count(nbr))
             {
-                string nbr = it->first;
-                if (!processed.count(nbr))
-                {
-                    Pair np;
-                    np.aname = nbr;
-                    np.psf = rp.psf + nbr + "  ";
-                    np.min_time = rp.min_time + 120 + 40 * rpvtx.nbrs[nbr];
-                    stack.push_front(np);
-                }
+                Pair np;
+                np.aname = nbr;
+                np.psf = rp.psf + nbr + "  ";
+
+                // Calculate time based on increased speed
+                // Assuming speed is 2000 mph, calculate time for the distance
+                int distance = rpvtx.nbrs[nbr];
+                np.min_time = rp.min_time + (distance / 2000.0) * 60; // Convert hours to minutes
+                stack.push_front(np);
             }
         }
-        double minutes = ceil((double)min / 60);
-        ans = ans + to_string(minutes);
-        return ans;
     }
-
+    double minutes = ceil((double)min);
+    ans = ans + to_string(minutes);
+    return ans;
+}
     vector<string> get_Interchanges(string str)
     {
         vector<string> arr;
