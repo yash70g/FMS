@@ -148,9 +148,9 @@ public:
     class DijkstraPair
     {
     public:
-        string aname; // Airport name
-        string psf;   // Path so far
-        int cost;     // Cost of the route
+        string aname; 
+         string psf;   
+        int cost;     
         bool operator<(const DijkstraPair &o) const
         {
             return cost > o.cost;
@@ -220,7 +220,7 @@ public:
         string aname; // Airport name
         string psf;   // Path so far
         int min_dis;  // Minimum distance
-        int min_time; // Minimum time
+        int sec_time; // Minimum time
     };
 
     string Get_Minimum_Distance(string src, string dst)
@@ -234,7 +234,7 @@ public:
         sp.aname = src;
         sp.psf = src + "  ";
         sp.min_dis = 0;
-        sp.min_time = 0;
+        sp.sec_time = 0;
 
         stack.push_front(sp);
 
@@ -288,9 +288,10 @@ public:
     sp.aname = src;
     sp.psf = src + "  ";
     sp.min_dis = 0;
-    sp.min_time = 0;
+    sp.sec_time = 0;
 
     stack.push_front(sp);
+
 
     while (!stack.empty())
     {
@@ -305,7 +306,7 @@ public:
 
         if (rp.aname == dst)
         {
-            int temp = rp.min_time;
+            int temp = rp.sec_time;
             if (temp < min)
             {
                 ans = rp.psf;
@@ -322,17 +323,13 @@ public:
                 Pair np;
                 np.aname = nbr;
                 np.psf = rp.psf + nbr + "  ";
-
-                // Calculate time based on increased speed
-                // Assuming speed is 2000 mph, calculate time for the distance
-                int distance = rpvtx.nbrs[nbr];
-                np.min_time = rp.min_time + (distance / 2000.0) * 60; // Convert hours to minutes
+                np.sec_time = rp.sec_time + 300; 
                 stack.push_front(np);
             }
         }
     }
-    double minutes = ceil((double)min);
-    ans = ans + to_string(minutes);
+    double hours = ceil((double)min / 3600);
+    ans = ans + to_string(hours);
     return ans;
 }
     vector<string> get_Interchanges(string str)
@@ -343,11 +340,13 @@ public:
         char *temp = new char[str.length() + 1];
         strcpy(temp, str.c_str());
         char *token = strtok(temp, "  ");
+
         while (token != NULL)
         {
             res[k++] = token;
             token = strtok(NULL, "  ");
         }
+
         arr.push_back(res[0]);
         int count = 0;
         for (int i = 1; i < k - 1; i++)
@@ -384,7 +383,6 @@ unordered_map<string, Flight_M::Airport> Flight_M::airports;
 
 void Create_Flight_Map(Flight_M &f)
 {
-    
     f.addAirport("IGI Airport~Delhi");
     f.addAirport("CSMI Airport~Mumbai");
     f.addAirport("KIA Airport~Bangalore");
@@ -408,10 +406,10 @@ void Create_Flight_Map(Flight_M &f)
     f.addRoute("MAA Airport~Chennai", "NSCB Airport~Kolkata", 1650);
     f.addRoute("NSCB Airport~Kolkata", "RGIA Airport~Hyderabad", 600);
     f.addRoute("RGIA Airport~Hyderabad", "COK Airport~Kochi", 700);
-    f.addRoute("COK Airport~Kochi", "SVPI Airport~Ahmedabad", 900);
+    f.addRoute("COK Airport~Kochi", "SVPI Airport~Ahmedabad", 800);
     f.addRoute("SVPI Airport~Ahmedabad", "GOI Airport~Goa", 650);
     f.addRoute("GOI Airport~Goa", "PNQ Airport~Pune", 190);
-    f.addRoute("PNQ Airport~Pune", "IGI Airport~Delhi", 1400);
+    f.addRoute("PNQ Airport~Pune", "IGI Airport~Delhi", 1500);
     f.addRoute("TRV Airport~Thiruvananthapuram", "COK Airport~Kochi", 200);
     f.addRoute("JAI Airport~Jaipur", "IGI Airport~Delhi", 280);
     f.addRoute("IXE Airport~Mangaluru", "KIA Airport~Bangalore", 200);
@@ -464,8 +462,8 @@ int main()
     Flight_M f;
     Create_Flight_Map(f);
     cout << "\n\t\t\t*WELCOME TO THE FLIGHT APP" << endl;
-
-    while (true)
+    bool st=true;
+    while (st)
     {
         cout << "\t\t\t\t~LIST OF ACTIONS~\n\n"
              << endl;
@@ -496,7 +494,7 @@ int main()
         else if (choice == 3)
         {
             printCodelist();
-            cout << "\n1. TO ENTER SERIAL NO. OF AIRPORTS\n2. TO ENTER CODE OF AIRPORTS\n3. TO ENTER NAME OF AIRPORTS\n"
+            cout << "\n1. TO ENTER SERIAL NO. OF AIRPORTS\n2. TO ENTER CODE OF AIRPORTS\n"
                  << endl;
             cout << "ENTER YOUR CHOICE:";
             int ch;
@@ -550,10 +548,6 @@ int main()
                     }
                 }
             }
-            else if (ch == 3)
-            {
-                cin >> st1 >> st2;
-            }
             else
             {
                 cout << "Invalid choice" << endl;
@@ -563,21 +557,21 @@ int main()
             if (!f.containsAirport(st1) || !f.containsAirport(st2) || !f.hasRoute(st1, st2, processed))
                 cout << "THE INPUTS ARE INVALID" << endl;
             else
-                cout << "SHORTEST DISTANCE FROM " << st1 << " TO " << st2 << " IS " << f.dijkstra(st1, st2, false) << " MILES" << endl;
+                cout << "SHORTEST DISTANCE FROM " << st1 << " TO " << st2 << " IS " << f.dijkstra(st1, st2, false) << " KM" << endl;
             break;
         }
         else if (choice == 4)
         {
-            f.display_Airports(); // Display airport indices for user reference
+            f.display_Airports();
 
             int srcIndex, desIndex;
-            std::cout << "Enter the index of the source airport: ";
-            std::cin >> srcIndex;
+            cout << "Enter the index of the source airport: ";
+            cin >> srcIndex;
 
-            std::cout << "Enter the index of the destination airport: ";
-            std::cin >> desIndex;
+            cout << "Enter the index of the destination airport: ";
+            cin >> desIndex;
 
-            std::vector<std::string> airportNames;
+            vector<string> airportNames;
             for (const auto &it : Flight_M::airports)
             {
                 airportNames.push_back(it.first);
@@ -586,23 +580,23 @@ int main()
             if (srcIndex >= 1 && srcIndex <= airportNames.size() &&
                 desIndex >= 1 && desIndex <= airportNames.size())
             {
-                std::string src = airportNames[srcIndex - 1];
-                std::string des = airportNames[desIndex - 1];
+                string src = airportNames[srcIndex - 1];
+                string des = airportNames[desIndex - 1];
 
                 int shortestTime = f.dijkstra(src, des, true);
 
-                if (shortestTime != std::numeric_limits<int>::max())
+                if (shortestTime != numeric_limits<int>::max())
                 {
-                    std::cout << "Shortest time from " << src << " to " << des << " is " << shortestTime / 28 << " minutes." << std::endl;
+                    cout << "Shortest time from " << src << " to " << des << " is " << shortestTime / 1500 << " minutes." << endl;
                 }
                 else
                 {
-                    std::cout << "No path found from " << src << " to " << des << "." << std::endl;
+                    cout << "No path found from " << src << " to " << des << "." << endl;
                 }
             }
             else
             {
-                std::cout << "Invalid airport indices." << std::endl;
+                cout << "Invalid airport indices." << endl;
             }
         }
         else if (choice == 5)
@@ -633,7 +627,7 @@ int main()
                     int len = str.size();
                     cout << "SOURCE AIRPORT : " << s1 << endl;
                     cout << "DESTINATION AIRPORT : " << s2 << endl;
-                    cout << "DISTANCE : " << str[len - 1] << " MILES" << endl;
+                    cout << "DISTANCE : " << str[len - 1] << " KM" << endl;
                     cout << "NUMBER OF INTERCHANGES : " << str[len - 2] << endl;
 
                     cout << "~" << endl;
